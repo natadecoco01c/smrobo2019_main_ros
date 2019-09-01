@@ -39,7 +39,7 @@
     <!-- shutdown controller -->
     <node pkg="base_controller" type="shutdown_controller_joy" name="shutdown_ctrl" />
 
-    <node name="mr1_can" pkg="smrobo2019_main_ros" type="mr1_can" output="screen" />
+    <node name="4ste_can" pkg="smrobo2019_main_ros" type="4ste_can" output="screen" />
 
     
     <!-- usb_can -->

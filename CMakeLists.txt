@@ -203,12 +203,12 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-add_executable(mr1_main_semiauto src/mr1_main_semiauto.cpp)
-target_link_libraries(mr1_main_semiauto ${catkin_LIBRARIES})
+add_executable(4ste_main src/4ste_main.cpp)
+target_link_libraries(4ste_main ${catkin_LIBRARIES})
 
-add_executable(mr1_can src/mr1_can.cpp)
-target_link_libraries(mr1_can ${catkin_LIBRARIES})
-add_dependencies(mr1_can ${catkin_EXPORTED_TARGETS})
+add_executable(4ste_can src/4ste_can.cpp)
+target_link_libraries(4ste_can ${catkin_LIBRARIES})
+add_dependencies(4ste_can ${catkin_EXPORTED_TARGETS})
 
 add_executable(usb_can_node_19 src/usb_can_node_19.cpp)
 target_link_libraries(usb_can_node_19 ${catkin_LIBRARIES})
