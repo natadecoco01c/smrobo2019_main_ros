@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <!-- import joy button/axis mapping settings -->
+    <rosparam file="$(find smrobo2019_main_ros)/param/logitech_f710_joy_assign.yaml" command="load" />
+
+    <!-- arg name="use_sim_time" default="false"/>
+    <param name="use_sim_time" value="$(arg use_sim_time" /-->
+    <arg name="use_joy" value="true" />
+    
+    <!-- base controller -->
+    <node pkg="base_controller" type="base_controller" name="base_ctrl" output="screen">
+        <param name="motor_max_acc" value="70.0" />
+        <param name="motor_max_vel" value="60.0" />
+        <param name="wheel_radius" value="0.040" />	
+	<param name="ctrl_freq" value="200" />
+        <param name="invert_x" value="false" />
+        <param name="invert_y" value="false" />
+        <param name="invert_z" value="false" />
+	<param name="controller_absolute" value="true" />
+        <remap from="motor0_cmd_vel" to="base/motor0_cmd_vel" />
+        <remap from="motor1_cmd_vel" to="base/motor1_cmd_vel" />
+        <remap from="motor2_cmd_vel" to="base/motor2_cmd_vel" />
+	<remap from="motor3_cmd_vel" to="base/motor3_cmd_vel" />
+	<remap from="motor0_cmd_pos" to="base/motor0_cmd_pos" />
+	<remap from="motor1_cmd_pos" to="base/motor1_cmd_pos" />
+	<remap from="motor2_cmd_pos" to="base/motor2_cmd_pos" />
+	<remap from="motor3_cmd_pos" to="base/motor3_cmd_pos" />
+    </node>
+    
+    <!-- joy node -->
+    <node respawn="true" pkg="joy" type="joy_node" name="joy_node" >
+        <param name="dev" type="string" value="/dev/input/js0" />
+        <param name="deadzone" value="0.12" />
+    </node>
+
+    <!-- mr1 main -->
+    <arg name="red" default="true"/>
+    <group if="$(arg red)">
+     <include file="$(find laser2location)/launch/s19_localization_red.launch"/>
+     <node pkg="smrobo2019_main_ros" type="mr1_main_semiauto" name="main" output="screen" respawn="true" >
+	<param name="start_zone_X" value="0.3" />
+	<param name="start_zone_Y" value="0.46" />
+	<param name="start_zone_YAW" value="0.0" />
+	<param name="throwing_zone_X" value="2.571" />
+	<param name="throwing_zone_Y" value="1.211" />
+	<param name="throwing_zone_YAW" value="2.57" />
+	<param name="launcher_down" value="-11.4" />
+	<param name="slipper_detect_threshold" value="40" />
+	<param name="sensor_err_tolerance" value="2" />
+     </node>
+    </group>
+
+    <group unless="$(arg red)">
+     <include file="$(find laser2location)/launch/s19_localization_blue.launch"/>
+     <node pkg="smrobo2019_main_ros" type="mr1_main_semiauto" name="main" output="screen" respawn="true" >
+	<param name="start_zone_X" value="3.1185" />
+	<param name="start_zone_Y" value="0.431" />
+	<param name="start_zone_YAW" value="3.14" />
+	<param name="throwing_zone_X" value="1.021" />
+	<param name="throwing_zone_Y" value="1.2133" />
+	<param name="throwing_zone_YAW" value="0.53" />
+	<param name="launcher_down" value="-11.4" />
+	<param name="slipper_detect_threshold" value="40" />
+	<param name="sensor_err_tolerance" value="2" />
+     </node>
+    </group>
+
+    <!-- mr1 can -->
+    <node pkg="smrobo2019_main_ros" type="mr1_can" name="mr1_can" respawn="true" />
+    
+    <!-- usb_can -->
+    <node pkg="smrobo2019_main_ros" type="usb_can_node_19" name="usb_can_node_19" respawn="true" output="screen">
+        <param name="port" value="/dev/ttyUSB0" />
+    </node>ro
+    <!-- odometry broadcaster -->
+    <node pkg="base_controller" type="odom_publisher" name="odom_publisher" if="true">
+        <param name="ctrl_freq" value="200" />
+        <param name="odom_frame" value="odom" />
+        <remap from="/odom/yaw" to="/base/odom/yaw" />
+        <remap from="/odom/x" to="/base/odom/x" />
+        <remap from="/odom/y" to="/base/odom/y" />
+    </node>
+
+    <!-- move.py -->
+    <node pkg="smrobo2019_main_ros" type="move.py" name="move" output="screen">
+	<param name="KP_Vy" value="1.0"/>
+  	<param name="KI_Vy" value="0"/>
+  	<param name="KD_Vy" value="0"/>
+  	<param name="lim_Vy" value="3110"/>
+  	<param name="KP_omega" value="1"/> 
+  	<param name="KI_omega" value="0"/>
+  	<param name="KD_omega" value="0"/>
+  	<param name="lim_omega" value="5"/>
+  	<param name="epsilon_position" value="0.0007"/>
+  	<param name="epsilon_theta" value="0.003"/>
+	<remap from="/odom" to="/lrf_pose" />
+    </node>
+
+</launch>
